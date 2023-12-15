@@ -3,6 +3,7 @@ package com.example.verduleriaweb.servicios;
 import com.example.verduleriaweb.entidades.Usuario;
 import com.example.verduleriaweb.enumeradores.Rol;
 import com.example.verduleriaweb.excepciones.MyException;
+import com.example.verduleriaweb.excepciones.UsuarioNotFoundException;
 import com.example.verduleriaweb.repositorios.UsuarioRepositorio;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -46,6 +47,17 @@ public class UsuarioServicio implements UserDetailsService {
         usuarioRepositorio.save(usuario);
     }
 
+    public List<Usuario> verUsuariosTodos() {
+        if (usuarioRepositorio.findAll().isEmpty())
+            throw new UsuarioNotFoundException("No hay usuarios ingresados.");
+        return usuarioRepositorio.findAll();
+    }
+
+    public Optional<Usuario> verUsuarioPorID(String id) {
+        if (usuarioRepositorio.findById(id).isEmpty())
+            throw new UsuarioNotFoundException("El usuario solicitado no existe");
+        return usuarioRepositorio.findById(id);
+    }
 
     @Transactional
     public void actualizar(String idUsuario, String nombre, String apellido, String dni, String email, String password) throws MyException {
@@ -68,17 +80,6 @@ public class UsuarioServicio implements UserDetailsService {
 
     }
 
-    public Usuario getOne(String id) {
-        return usuarioRepositorio.findById(id).get();
-    }
-
-    @Transactional
-    public List<Usuario> listarUsuarios() {
-        List<Usuario> usuarios = new ArrayList();
-        usuarios = usuarioRepositorio.findAll();
-        return usuarios;
-    }
-
     private void validar(String nombre, String apellido, String dni, String email, String password) throws MyException {
 
         if (nombre.isEmpty() || nombre == null) {
@@ -96,6 +97,10 @@ public class UsuarioServicio implements UserDetailsService {
         if (password.isEmpty() || password == null || password.length() <= 5) {
             throw new MyException("La contraseña no puede estar vacía, y debe tener más de 5 dígitos");
         }
+    }
+
+    public void eliminarUsuario(String id) {
+        usuarioRepositorio.deleteById(id);
     }
 
     @Override
