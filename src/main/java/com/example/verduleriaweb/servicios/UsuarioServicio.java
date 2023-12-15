@@ -31,7 +31,7 @@ public class UsuarioServicio implements UserDetailsService {
 
 
     @Transactional
-    public void registrar(String nombre, String apellido, String dni, String email, String password)
+    public Usuario registrar(String nombre, String apellido, String dni, String email, String password)
             throws MyException {
 
         validar(nombre, apellido, dni, email, password);
@@ -42,9 +42,9 @@ public class UsuarioServicio implements UserDetailsService {
         usuario.setEmail(email);
 
         usuario.setPassword(new BCryptPasswordEncoder().encode(password));
-        usuario.setRol(Rol.PUBLICO);
+        usuario.setRol(Rol.USER);
 
-        usuarioRepositorio.save(usuario);
+        return usuarioRepositorio.save(usuario);
     }
 
     public List<Usuario> verUsuariosTodos() {
@@ -73,7 +73,7 @@ public class UsuarioServicio implements UserDetailsService {
             usuario.setDni(dni);
             usuario.setEmail(email);
             usuario.setPassword(new BCryptPasswordEncoder().encode(password));
-            usuario.setRol(Rol.PUBLICO);
+            usuario.setRol(Rol.USER);
 
             usuarioRepositorio.save(usuario);
         }
